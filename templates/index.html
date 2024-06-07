@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Strength Checker</title>
+    <style>
+        body {
+            background-color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .login-box {
+            width: 400px;
+            padding: 40px;
+            background: rgba(24, 20, 20, 0.987);
+            box-shadow: 0 15px 25px rgba(0,0,0,.6);
+            border-radius: 10px;
+            text-align: center;
+        }
+        .login-box h2 {
+            margin-bottom: 20px;
+            color: #fff;
+        }
+        .user-box {
+            position: relative;
+        }
+        .user-box input {
+            width: 100%;
+            padding: 10px 0;
+            font-size: 16px;
+            color: #fff;
+            margin-bottom: 30px;
+            border: none;
+            border-bottom: 1px solid #fff;
+            outline: none;
+            background: transparent;
+        }
+        .user-box label {
+            position: absolute;
+            top: 0;
+            left: 0;
+            padding: 10px 0;
+            font-size: 16px;
+            color: #fff;
+            pointer-events: none;
+            transition: .5s;
+        }
+        .user-box input:focus ~ label,
+        .user-box input:valid ~ label {
+            top: -20px;
+            left: 0;
+            color: #bdb8b8;
+            font-size: 12px;
+        }
+        button {
+            padding: 10px 20px;
+            color: #ffffff;
+            background: none;
+            border: 2px solid #03f40f;
+            text-transform: uppercase;
+            transition: .5s;
+            cursor: pointer;
+            letter-spacing: 4px;
+            margin: 10px 0;
+        }
+        button:hover {
+            background: #03f40f;
+            color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 5px #03f40f,
+                        0 0 25px #03f40f,
+                        0 0 50px #03f40f,
+                        0 0 100px #03f40f;
+        }
+        #feedback {
+            margin-top: 20px;
+            color: #fff;
+        }
+        #suggested-password {
+            margin-top: 20px;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h2>Password Strength Checker</h2>
+        <form id="password-form">
+            <div class="user-box">
+                <input type="password" id="password" name="password" required>
+                <label>Password</label>
+            </div>
+            <center>
+                <button type="button" onclick="checkPasswordStrength()">Check Strength</button>
+                <button type="button" onclick="suggestPassword()">Suggest Password</button>
+            </center>
+        </form>
+        <div id="feedback"></div>
+        <div id="suggested-password"></div>
+    </div>
+    <script>
+        function checkPasswordStrength() {
+            const password = document.getElementById("password").value;
+            fetch('/check_password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `password=${encodeURIComponent(password)}`,
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("feedback").innerText = data.feedback;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function suggestPassword() {
+            fetch('/suggest_password')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("suggested-password").innerText = `Suggested Password: ${data.password}`;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
